@@ -20,7 +20,7 @@ app.use(
       'https://t3chadvantage.com',
     ],
     credentials: true,
-  })
+  }),
 );
 
 app.use(express.json());
@@ -34,12 +34,13 @@ app.use('/api/v1', router);
 
 //live response
 app.get('/', (req: Request, res: Response) => {
-  const date = new Date(Date.now());
-  res.send(
-    `<h1 style="text-align:center; color:#173616; font-family:Verdana;">Beep-beep! The server is alive and kicking.</h1>
-    <p style="text-align:center; color:#173616; font-family:Verdana;">${date}</p>
-    `
-  );
+  return res.redirect('https://www.t3chadvantage.com');
+  // const date = new Date(Date.now());
+  // res.send(
+  //   `<h1 style="text-align:center; color:#173616; font-family:Verdana;">Beep-beep! The server is alive and kicking.</h1>
+  //   <p style="text-align:center; color:#173616; font-family:Verdana;">${date}</p>
+  //   `
+  // );
 });
 
 //global error handle
