@@ -20,7 +20,7 @@ const createUser = catchAsync(
       message: 'User created successfully',
       data: result,
     });
-  }
+  },
 );
 // @API Endpoint: api/v1/user
 // @Method: GET
@@ -34,7 +34,7 @@ const getUserProfile = catchAsync(
       message: 'Profile data retrieved successfully',
       data: result,
     });
-  }
+  },
 );
 // @API Endpoint: api/v1/user/all
 // @Method: GET
@@ -71,7 +71,7 @@ const updateUserName = catchAsync(
       message: 'User name updated successfully',
       data: updatedUser,
     });
-  }
+  },
 );
 
 // @update profile
@@ -93,7 +93,7 @@ const updateProfile = catchAsync(
       message: 'Profile updated successfully',
       data: result,
     });
-  }
+  },
 );
 // @API Endpoint: api/v1/user/total-user
 // @Method: GET
@@ -106,7 +106,7 @@ export const totalUsers = catchAsync(
       message: 'Total uses are ${count}',
       data: count,
     });
-  }
+  },
 );
 
 // @API Endpoint: api/v1/user/search?q=liton
@@ -124,7 +124,7 @@ const searchUsers = catchAsync(
       message: 'Users fetched successfully',
       data: users,
     });
-  }
+  },
 );
 
 // @API Endpoint: api/v1/user/filter
@@ -143,7 +143,7 @@ const filterUsers = catchAsync(
       message: 'Users fetched successfully',
       data: users,
     });
-  }
+  },
 );
 
 // @apiend point:api/v1/user/block/:id
@@ -157,7 +157,7 @@ const blockUser = catchAsync(
       message: 'Users fetched successfully',
       data: user,
     });
-  }
+  },
 );
 
 // @apiend point:api/v1/user/unblock/:id
@@ -171,7 +171,7 @@ const unblockUser = catchAsync(
       message: 'Users fetched successfully',
       data: user,
     });
-  }
+  },
 );
 // @apiend point:api/v1/user/blocked
 // @method:get
@@ -184,7 +184,20 @@ const getBlockedUsers = catchAsync(
       message: 'Blocked Users fetched successfully',
       data: users,
     });
-  }
+  },
+);
+
+const userProfileDelete = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { id } = req.params;
+    await UserService.deleteUserProfileFromDB(id);
+    sendResponse(res, {
+      success: true,
+      statusCode: StatusCodes.OK,
+      message: 'User profile deleted successfully',
+      data: null,
+    });
+  },
 );
 
 export const UserController = {
@@ -199,4 +212,5 @@ export const UserController = {
   unblockUser,
   getBlockedUsers,
   updateUserName,
+  userProfileDelete,
 };

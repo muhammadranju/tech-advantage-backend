@@ -13,7 +13,7 @@ router
   .route('/profile')
   .get(
     auth(USER_ROLES.ADMIN, USER_ROLES.SUPER_ADMIN, USER_ROLES.USER),
-    UserController.getUserProfile
+    UserController.getUserProfile,
   )
   .patch(
     auth(USER_ROLES.SUPER_ADMIN, USER_ROLES.ADMIN, USER_ROLES.USER),
@@ -21,24 +21,24 @@ router
     (req: Request, res: Response, next: NextFunction) => {
       if (req.body.data) {
         req.body = UserValidation.updateUserZodSchema.parse(
-          JSON.parse(req.body.data)
+          JSON.parse(req.body.data),
         );
       }
       return UserController.updateProfile(req, res, next);
-    }
+    },
   );
 
 router.post(
   '/login',
   validateRequest(AuthValidation.createLoginZodSchema),
-  AuthController.loginUser
+  AuthController.loginUser,
 );
 
 router
   .route('/')
   .post(
     validateRequest(UserValidation.createUserZodSchema),
-    UserController.createUser
+    UserController.createUser,
   );
 router
   .route('/total-user')
@@ -53,7 +53,7 @@ router
 router.patch(
   '/:id/name',
   auth(USER_ROLES.SUPER_ADMIN),
-  UserController.updateUserName
+  UserController.updateUserName,
 );
 
 router
@@ -63,17 +63,24 @@ router
 router.patch(
   '/block/:id',
   auth(USER_ROLES.SUPER_ADMIN),
-  UserController.blockUser
+  UserController.blockUser,
 );
 router.patch(
   '/unblock/:id',
   auth(USER_ROLES.SUPER_ADMIN),
-  UserController.unblockUser
+  UserController.unblockUser,
 );
 router.get(
   '/blocked',
   auth(USER_ROLES.SUPER_ADMIN),
-  UserController.getBlockedUsers
+  UserController.getBlockedUsers,
 );
+
+router
+  .route('/profile/delete/:id')
+  .delete(
+    auth(USER_ROLES.SUPER_ADMIN, USER_ROLES.ADMIN, USER_ROLES.USER),
+    UserController.userProfileDelete,
+  );
 
 export const UserRoutes = router;

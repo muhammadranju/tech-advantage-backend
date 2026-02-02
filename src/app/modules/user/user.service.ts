@@ -36,14 +36,14 @@ const createUserToDB = async (payload: Partial<IUser>): Promise<IUser> => {
   };
   await User.findOneAndUpdate(
     { _id: createUser._id },
-    { $set: { authentication } }
+    { $set: { authentication } },
   );
 
   return createUser;
 };
 
 const getUserProfileFromDB = async (
-  user: JwtPayload
+  user: JwtPayload,
 ): Promise<Partial<IUser>> => {
   const { id } = user;
   const isExistUser = await User.isExistUserById(id);
@@ -54,7 +54,7 @@ const getUserProfileFromDB = async (
 };
 
 const getAllUsersFromDB = async (
-  paginationOptions: IPaginationOptions
+  paginationOptions: IPaginationOptions,
 ): Promise<{ meta: any; data: Partial<IUser>[] }> => {
   const { skip, limit, sortBy, sortOrder, page } =
     paginationHelper.calculatePagination(paginationOptions);
@@ -73,7 +73,7 @@ const updateUserNameInDB = async (userId: string, newName: string) => {
   const updatedUser = await User.findByIdAndUpdate(
     userId,
     { name: newName },
-    { new: true }
+    { new: true },
   );
 
   if (!updatedUser) {
@@ -85,7 +85,7 @@ const updateUserNameInDB = async (userId: string, newName: string) => {
 
 const updateProfileToDB = async (
   user: JwtPayload,
-  payload: Partial<IUser>
+  payload: Partial<IUser>,
 ): Promise<Partial<IUser | null>> => {
   const { id } = user;
   const isExistUser = await User.isExistUserById(id);
@@ -116,7 +116,7 @@ const searchUsersToDB = async (searchTerm: string) => {
 };
 
 const filterUsersByDateFromDB = async (
-  sort: 'newest' | 'oldest' = 'newest'
+  sort: 'newest' | 'oldest' = 'newest',
 ) => {
   return await User.find({ role: { $ne: 'SUPER_ADMIN' } }).sort({
     createdAt: sort === 'newest' ? -1 : 1,
@@ -134,6 +134,10 @@ const getBlockedUsers = async () => {
   return await User.find({ userStatus: 'blocked' });
 };
 
+const deleteUserProfileFromDB = async (userId: string) => {
+  return await User.findByIdAndDelete(userId);
+};
+
 export const UserService = {
   createUserToDB,
   getUserProfileFromDB,
@@ -146,4 +150,5 @@ export const UserService = {
   unblockUser,
   getBlockedUsers,
   updateUserNameInDB,
+  deleteUserProfileFromDB,
 };
