@@ -241,15 +241,15 @@ const removeReply = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-const removePost = async (postId: string, userId: string) => {
-  const deletedPost = await PostModel.findOneAndDelete({
-    _id: postId,
-    user: new Types.ObjectId(userId),
+const removePost = catchAsync(async (req: Request, res: Response) => {
+  await CommunityService.removePost(req.params.postId, req.user.id);
+  sendResponse(res, {
+    success: true,
+    statusCode: StatusCodes.OK,
+    message: 'Post deleted successfully',
+    data: null,
   });
-
-  if (!deletedPost) throw new Error('Post not found or not authorized');
-  return deletedPost;
-};
+});
 
 export const CommunityController = {
   createComment,
