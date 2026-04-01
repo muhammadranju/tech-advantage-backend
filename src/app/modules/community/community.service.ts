@@ -6,7 +6,7 @@ import { Types } from 'mongoose';
 //createGroup by the user
 const createGroup = async (
   groupData: { name: string; image?: string },
-  createdBy: Types.ObjectId
+  createdBy: Types.ObjectId,
 ) => {
   const newGroup = new GroupModel({
     ...groupData,
@@ -26,7 +26,7 @@ const getGroups = async () => {
 // @create post by user
 const createPost = async (
   postData: { group: Types.ObjectId; description: string; image?: string[] },
-  userId: Types.ObjectId
+  userId: Types.ObjectId,
 ) => {
   const newPost = new PostModel({
     ...postData,
@@ -51,7 +51,7 @@ const createComment = async (
   commentData: { text: string; image?: string[] },
   groupId: Types.ObjectId,
   postId: Types.ObjectId,
-  userId: Types.ObjectId | string
+  userId: Types.ObjectId | string,
 ) => {
   const newComment = new CommentModel({
     ...commentData,
@@ -67,7 +67,7 @@ const createComment = async (
 const addReply = async (
   commentId: string,
   userId: string,
-  replyData: { text: string; image?: string[] }
+  replyData: { text: string; image?: string[] },
 ) => {
   const { text, image } = replyData;
   const replyUserId = new Types.ObjectId(userId);
@@ -82,7 +82,7 @@ const addReply = async (
           createdAt: new Date(),
         },
       },
-    }
+    },
   );
   const updatedComment = await CommentModel.findById(commentId)
     .populate('user', 'name email')
@@ -113,12 +113,12 @@ const getCommentsByPost = async (postId: Types.ObjectId) => {
 const editComment = async (
   commentId: string,
   userId: string,
-  data: { text: string; image: string[] }
+  data: { text: string; image: string[] },
 ) => {
   const updatedComment = await CommentModel.findOneAndUpdate(
     { _id: commentId, user: new Types.ObjectId(userId) },
     { $set: data },
-    { new: true }
+    { new: true },
   )
     .populate('user', 'name email')
     .populate('replies.user', 'name email');
@@ -146,7 +146,7 @@ export const editReply = async (
   commentId: string,
   replyId: string,
   userId: string,
-  data: { text?: string; image?: string[] }
+  data: { text?: string; image?: string[] },
 ) => {
   const comment = await CommentModel.findById({
     _id: commentId,
@@ -172,7 +172,7 @@ export const editReply = async (
 const deleteReply = async (
   commentId: string,
   replyId: string,
-  userId: string
+  userId: string,
 ) => {
   const updatedComment = await CommentModel.findOneAndUpdate(
     { _id: commentId },
@@ -181,7 +181,7 @@ const deleteReply = async (
         replies: { _id: replyId, user: new Types.ObjectId(userId) },
       },
     },
-    { new: true }
+    { new: true },
   )
     .populate('user', 'name email')
     .populate('replies.user', 'name email');
@@ -189,6 +189,16 @@ const deleteReply = async (
   if (!updatedComment) throw new Error('Reply not found or not authorized');
 
   return updatedComment;
+};
+
+const removePost = async (postId: string, userId: string) => {
+  const deletedPost = await PostModel.findOneAndDelete({
+    _id: postId,
+    user: new Types.ObjectId(userId),
+  });
+
+  if (!deletedPost) throw new Error('Post not found or not authorized');
+  return deletedPost;
 };
 
 export const CommunityService = {
@@ -203,4 +213,5 @@ export const CommunityService = {
   deleteComment,
   editReply,
   deleteReply,
+  removePost,
 };

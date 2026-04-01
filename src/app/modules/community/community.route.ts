@@ -11,12 +11,12 @@ router.post(
   '/',
   auth(USER_ROLES.SUPER_ADMIN),
   fileUploadHandler(),
-  CommunityController.createGroup
+  CommunityController.createGroup,
 );
 router.get(
   '/',
   auth(USER_ROLES.SUPER_ADMIN, USER_ROLES.USER),
-  CommunityController.getGroups
+  CommunityController.getGroups,
 );
 export const GroupRoutes = router;
 
@@ -25,12 +25,12 @@ router.post(
   '/:groupId/posts',
   auth(USER_ROLES.SUPER_ADMIN, USER_ROLES.USER),
   fileUploadHandler(),
-  CommunityController.createPost
+  CommunityController.createPost,
 );
 router.get(
   '/:groupId/posts',
   auth(USER_ROLES.SUPER_ADMIN, USER_ROLES.USER),
-  CommunityController.getPostsByGroup
+  CommunityController.getPostsByGroup,
 );
 
 // @Comment Routes
@@ -38,19 +38,19 @@ router.post(
   '/:groupId/post/:postId/comments',
   auth(USER_ROLES.SUPER_ADMIN, USER_ROLES.USER),
   fileUploadHandler(),
-  CommunityController.createComment
+  CommunityController.createComment,
 );
 // Reply to a comment
 router.post(
   '/comments/:commentId/replies',
   auth(USER_ROLES.SUPER_ADMIN, USER_ROLES.USER),
   fileUploadHandler(),
-  CommunityController.replyToComment
+  CommunityController.replyToComment,
 );
 router.get(
   '/:postId/comments',
   auth(USER_ROLES.SUPER_ADMIN, USER_ROLES.USER),
-  CommunityController.getCommentsByPost
+  CommunityController.getCommentsByPost,
 );
 
 // Top-level comment
@@ -58,12 +58,12 @@ router.put(
   '/comments/:commentId',
   auth(USER_ROLES.SUPER_ADMIN, USER_ROLES.USER),
   fileUploadHandler(),
-  CommunityController.updateComment
+  CommunityController.updateComment,
 );
 router.delete(
   '/comments/:commentId',
   auth(USER_ROLES.SUPER_ADMIN, USER_ROLES.USER),
-  CommunityController.removeComment
+  CommunityController.removeComment,
 );
 
 // Reply inside comment
@@ -71,12 +71,18 @@ router.put(
   '/comments/:commentId/replies/:replyId',
   auth(USER_ROLES.SUPER_ADMIN, USER_ROLES.USER),
   fileUploadHandler(),
-  CommunityController.updateReply
+  CommunityController.updateReply,
 );
 router.delete(
   '/comments/:commentId/replies/:replyId',
   auth(USER_ROLES.SUPER_ADMIN, USER_ROLES.USER),
-  CommunityController.removeReply
+  CommunityController.removeReply,
+);
+
+router.delete(
+  '/posts/:postId',
+  auth(USER_ROLES.SUPER_ADMIN),
+  CommunityController.removePost,
 );
 
 export const CommunityRoutes = router;

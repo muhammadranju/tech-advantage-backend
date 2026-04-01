@@ -9,6 +9,7 @@ import {
   getSingleFilePath,
 } from '../../../shared/getFilePath';
 import { NotificationService } from '../notification/notification.service';
+import { PostModel } from './community.model';
 
 // @Group Controller
 // @apiend point: api/v1/groups
@@ -18,7 +19,7 @@ const createGroup = catchAsync(
     let image = getSingleFilePath(req.files, 'image');
     const group = await CommunityService.createGroup(
       { ...req.body, image },
-      req.user.id
+      req.user.id,
     );
     sendResponse(res, {
       success: true,
@@ -26,7 +27,7 @@ const createGroup = catchAsync(
       message: 'Group created successfully',
       data: group,
     });
-  }
+  },
 );
 // @apiend point:api/v1/groups
 // @method:get
@@ -39,7 +40,7 @@ const getGroups = catchAsync(
       message: 'Group data fetch successfully',
       data: groups,
     });
-  }
+  },
 );
 
 // @Post Controller
@@ -52,7 +53,7 @@ const createPost = catchAsync(
 
     const post = await CommunityService.createPost(
       { ...req.body, image, group: groupId },
-      req.user.id
+      req.user.id,
     );
 
     //for creating a push notification data.
@@ -63,7 +64,7 @@ const createPost = catchAsync(
     await NotificationService.sendCustomNotification(
       title,
       description,
-      contentId
+      contentId,
     );
 
     sendResponse(res, {
@@ -72,7 +73,7 @@ const createPost = catchAsync(
       message: 'Post created successfully',
       data: post,
     });
-  }
+  },
 );
 
 // @Post Controller
@@ -88,7 +89,7 @@ const getPostsByGroup = catchAsync(
       message: 'Post get from Group successfully',
       data: posts,
     });
-  }
+  },
 );
 
 // @Comment Controller
@@ -104,7 +105,7 @@ const createComment = catchAsync(
       { ...req.body, image },
       groupId,
       postId,
-      req.user.id
+      req.user.id,
     );
     const user = req.user;
     const title = `${user.name} commented on your post`;
@@ -114,7 +115,7 @@ const createComment = catchAsync(
       title,
       description,
       groupId,
-      contentId
+      contentId,
     );
 
     sendResponse(res, {
@@ -123,7 +124,7 @@ const createComment = catchAsync(
       message: 'Comment created successfully',
       data: comment,
     });
-  }
+  },
 );
 
 // @reply to a comment
@@ -136,7 +137,7 @@ const replyToComment = catchAsync(
     const updatedComment = await CommunityService.addReply(
       commentId,
       req.user.id,
-      { ...req.body, image }
+      { ...req.body, image },
     );
     const user = req.user;
     const title = `${user.name} mention you`;
@@ -145,7 +146,7 @@ const replyToComment = catchAsync(
     await NotificationService.sendCustomNotification(
       title,
       description,
-      contentId
+      contentId,
     );
     sendResponse(res, {
       success: true,
@@ -153,7 +154,7 @@ const replyToComment = catchAsync(
       message: 'Reply added successfully',
       data: updatedComment,
     });
-  }
+  },
 );
 
 // @Comment Controller
@@ -170,7 +171,7 @@ const getCommentsByPost = catchAsync(
       message: 'Comments fetched successfully',
       data: comments,
     });
-  }
+  },
 );
 
 // @Edit top-level comment
@@ -181,7 +182,7 @@ const updateComment = catchAsync(async (req: Request, res: Response) => {
   const updatedComment = await CommunityService.editComment(
     req.params.commentId,
     req.user.id,
-    { ...req.body, image }
+    { ...req.body, image },
   );
   sendResponse(res, {
     success: true,
@@ -213,7 +214,7 @@ const updateReply = catchAsync(async (req: Request, res: Response) => {
     req.params.commentId,
     req.params.replyId,
     req.user.id,
-    { ...req.body, image }
+    { ...req.body, image },
   );
   sendResponse(res, {
     success: true,
@@ -230,7 +231,7 @@ const removeReply = catchAsync(async (req: Request, res: Response) => {
   const deletedComment = await CommunityService.deleteReply(
     req.params.commentId,
     req.params.replyId,
-    req.user.id
+    req.user.id,
   );
   sendResponse(res, {
     success: true,
@@ -239,6 +240,16 @@ const removeReply = catchAsync(async (req: Request, res: Response) => {
     data: deletedComment,
   });
 });
+
+const removePost = async (postId: string, userId: string) => {
+  const deletedPost = await PostModel.findOneAndDelete({
+    _id: postId,
+    user: new Types.ObjectId(userId),
+  });
+
+  if (!deletedPost) throw new Error('Post not found or not authorized');
+  return deletedPost;
+};
 
 export const CommunityController = {
   createComment,
@@ -252,4 +263,5 @@ export const CommunityController = {
   removeComment,
   updateReply,
   removeReply,
+  removePost,
 };
