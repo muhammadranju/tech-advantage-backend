@@ -1,15 +1,14 @@
 import { NextFunction, Request, Response } from 'express';
-import catchAsync from '../../../shared/catchAsync';
-import { CommunityService } from './community.service';
-import sendResponse from '../../../shared/sendResponse';
 import { StatusCodes } from 'http-status-codes';
 import { Types } from 'mongoose';
+import catchAsync from '../../../shared/catchAsync';
 import {
   getMultipleFilesPath,
   getSingleFilePath,
 } from '../../../shared/getFilePath';
+import sendResponse from '../../../shared/sendResponse';
 import { NotificationService } from '../notification/notification.service';
-import { PostModel } from './community.model';
+import { CommunityService } from './community.service';
 
 // @Group Controller
 // @apiend point: api/v1/groups
@@ -242,7 +241,7 @@ const removeReply = catchAsync(async (req: Request, res: Response) => {
 });
 
 const removePost = catchAsync(async (req: Request, res: Response) => {
-  await CommunityService.removePost(req.params.postId, req.user.id);
+  await CommunityService.removePost(req.params.postId, req.user.id as string);
   sendResponse(res, {
     success: true,
     statusCode: StatusCodes.OK,

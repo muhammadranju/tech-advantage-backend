@@ -33,6 +33,12 @@ router.get(
   CommunityController.getPostsByGroup,
 );
 
+router.delete(
+  '/posts/:postId',
+  auth(USER_ROLES.SUPER_ADMIN, USER_ROLES.USER),
+  CommunityController.removePost,
+);
+
 // @Comment Routes
 router.post(
   '/:groupId/post/:postId/comments',
@@ -40,6 +46,7 @@ router.post(
   fileUploadHandler(),
   CommunityController.createComment,
 );
+
 // Reply to a comment
 router.post(
   '/comments/:commentId/replies',
@@ -77,12 +84,6 @@ router.delete(
   '/comments/:commentId/replies/:replyId',
   auth(USER_ROLES.SUPER_ADMIN, USER_ROLES.USER),
   CommunityController.removeReply,
-);
-
-router.delete(
-  '/posts/:postId',
-  auth(USER_ROLES.SUPER_ADMIN, USER_ROLES.USER),
-  CommunityController.removePost,
 );
 
 export const CommunityRoutes = router;

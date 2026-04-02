@@ -1,6 +1,7 @@
-import { IComment, IGroup, IPost } from './community.interface';
-import { GroupModel, PostModel, CommentModel } from './community.model';
+import { StatusCodes } from 'http-status-codes';
 import { Types } from 'mongoose';
+import ApiError from '../../../errors/ApiError';
+import { CommentModel, GroupModel, PostModel } from './community.model';
 
 // @Group Service Methods
 //createGroup by the user
@@ -186,18 +187,27 @@ const deleteReply = async (
     .populate('user', 'name email')
     .populate('replies.user', 'name email');
 
-  if (!updatedComment) throw new Error('Reply not found or not authorized');
+  if (!updatedComment)
+    throw new ApiError(
+      StatusCodes.NOT_FOUND,
+      'Reply not found or not authorized',
+    );
 
   return updatedComment;
 };
 
 const removePost = async (postId: string, userId: string) => {
-  const deletedPost = await PostModel.findOneAndDelete({
-    _id: postId,
-    user: new Types.ObjectId(userId),
-  });
+  const deletedPost = await PostModel.findById(postId);
 
-  if (!deletedPost) throw new Error('Post not found or not authorized');
+  if (deletedPost?.user.toString() !== userId) {
+    throw new ApiError(
+      StatusCodes.FORBIDDEN,
+      'You are not authorized to delete this post',
+    );
+  }
+
+  if (!deletedPost) throw new ApiError(StatusCodes.NOT_FOUND, 'Post not found');
+  await deletedPost.deleteOne();
   return deletedPost;
 };
 
