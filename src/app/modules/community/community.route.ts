@@ -81,7 +81,7 @@ router.delete(
 
 router.delete(
   '/posts/:postId',
-  auth(USER_ROLES.SUPER_ADMIN),
+  auth(USER_ROLES.SUPER_ADMIN, USER_ROLES.USER),
   CommunityController.removePost,
 );
 
