@@ -18,6 +18,7 @@ app.use(
       'http://localhost:3000',
       'https://www.t3chadvantage.com',
       'https://t3chadvantage.com',
+      'https://dashboard.t3chadvantage.com',
     ],
     credentials: true,
   }),
